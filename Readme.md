@@ -1,5 +1,9 @@
-Authentication service
--------
+# Authentication service
+
+- [Схема базы данных](https://drawsql.app/teams/chemodan-tours/diagrams/gpe-authentication-service)
+
+---
+
 _**Чтобы начать работу:**_
 
 - Перейди в папку docker: 
