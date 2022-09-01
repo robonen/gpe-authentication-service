@@ -1,0 +1,40 @@
+version:  '3.7'
+
+services:
+  php_user:
+    container_name: php_user
+    build: dockerfile/php
+    restart: on-failure
+    expose:
+      - "9000"
+    volumes:
+      - ../app:/var/www/html
+      - ../app/vendor:/var/www/html/vendor
+    links:
+      - mysql_user
+
+  nginx_user:
+    container_name: nginx_user
+    image: nginx:latest
+    restart: on-failure
+    ports:
+      - "8000:80"
+    volumes:
+      - ../app:/var/www/html
+      - ./logs/nginx:/var/log/nginx
+      - ./config/nginx:/etc/nginx/conf.d
+    links:
+      - php_user
+
+  mysql_user:
+    container_name: mysql_user
+    image: mysql:5.7
+    restart: on-failure
+#    ports:
+#      - "3300:3306"
+    expose:
+      - "3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - ./db/user:/var/lib/mysql
