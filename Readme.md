@@ -1,4 +1,4 @@
-Crypto Bot
+Authentication service
 -------
 _**Чтобы начать работу:**_
 
