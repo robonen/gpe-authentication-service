@@ -1,6 +1,7 @@
 # Authentication service
 
 - [Схема базы данных](https://drawsql.app/teams/chemodan-tours/diagrams/gpe-authentication-service)
+- [Документация API](https://documenter.getpostman.com/view/11988073/VVBUzT4C)
 
 ---
 
