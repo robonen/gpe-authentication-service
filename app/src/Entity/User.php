@@ -3,9 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User
@@ -15,31 +15,33 @@ class User
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 1, max: 255)]
+    #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[Assert\Length(min: 1, max: 255)]
+    #[Assert\Email]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(min: 4, max: 25)]
+    #[ORM\Column(length: 25, nullable: true)]
     private ?string $phone = null;
 
-    #[ORM\Column(length: 255)]
+    #[Assert\Length(min: 6, max: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $password = null;
+
+    // TODO: Roles validator
+    #[ORM\Column(type: Types::ARRAY, nullable: true)]
+    private ?array $roles = [];
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $email_verified_at = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
-
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: AccessToken::class)]
-    private Collection $accessTokens;
-
-    public function __construct()
-    {
-        $this->accessTokens = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -94,14 +96,32 @@ class User
         return $this;
     }
 
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
     public function getEmailVerifiedAt(): ?\DateTimeImmutable
     {
         return $this->email_verified_at;
     }
 
-    public function setEmailVerifiedAt(?\DateTimeImmutable $email_verified_at): self
+    public function setEmailVerifiedAt(): self
     {
-        $this->email_verified_at = $email_verified_at;
+        if ($this->email_verified_at == null) {
+            $this->email_verified_at = new \DateTimeImmutable('now');
+        }
 
         return $this;
     }
@@ -111,38 +131,10 @@ class User
         return $this->created_at;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): self
+    public function setCreatedAt(): self
     {
-        $this->created_at = $created_at;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, AccessToken>
-     */
-    public function getAccessTokens(): Collection
-    {
-        return $this->accessTokens;
-    }
-
-    public function addAccessToken(AccessToken $accessToken): self
-    {
-        if (!$this->accessTokens->contains($accessToken)) {
-            $this->accessTokens->add($accessToken);
-            $accessToken->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAccessToken(AccessToken $accessToken): self
-    {
-        if ($this->accessTokens->removeElement($accessToken)) {
-            // set the owning side to null (unless already changed)
-            if ($accessToken->getUser() === $this) {
-                $accessToken->setUser(null);
-            }
+        if ($this->created_at == null) {
+            $this->created_at = new \DateTimeImmutable('now');
         }
 
         return $this;

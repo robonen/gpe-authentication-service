@@ -38,3 +38,18 @@ _**Чтобы начать работу:**_
 1. APP_ENV - окружение проекта. Для разработки используется dev, для продакшна prod.
 2. DATABASE_USER - имя пользователя для базы данных.
 3. DATABASE_PASSWORD - пароль для подключения пользователя к БД.
+
+---
+
+Установка зависимостей:
+```
+    composer create-project symfony/skeleton:"6.1.*" app
+    cd app
+    composer require sensio/framework-extra-bundle
+    composer require symfony/orm-pack
+    composer require --dev symfony/maker-bundle
+    composer require symfony/validator
+    composer require symfony/form
+    composer require symfony/serializer-pack
+    composer require symfony/security-bundle
+```
