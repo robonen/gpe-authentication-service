@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Controller\Authentication;
+namespace App\Controller\Project;
 
 use App\Controller\AbstractApiController;
-use App\Form\Type\UserType;
+use App\Form\Type\ProjectType;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -11,8 +11,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/auth/registration', name: 'auth_registration', methods: ['POST'])]
-final class RegistrationController extends AbstractApiController
+#[Route('/projects', name: 'project_create', methods: ['POST'])]
+final class CreateProjectController extends AbstractApiController
 {
     private ObjectManager $manager;
 
@@ -23,17 +23,16 @@ final class RegistrationController extends AbstractApiController
 
     public function __invoke(Request $request): JsonResponse
     {
-        $form = $this->buildForm(UserType::class, $request);
+        $form = $this->buildForm(ProjectType::class, $request);
 
         if (!$form->isValid())
             return $this->error($this->formatFormError($form), Response::HTTP_UNPROCESSABLE_ENTITY);
 
-        $user = $form->getData();
-        $user->setCreatedAt();
+        $project = $form->getData();
 
-        $this->manager->persist($user);
+        $this->manager->persist($project);
         $this->manager->flush();
 
-        return $this->ok($user, Response::HTTP_CREATED);
+        return $this->ok($project, Response::HTTP_CREATED);
     }
 }
