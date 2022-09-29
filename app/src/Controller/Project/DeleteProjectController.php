@@ -20,13 +20,10 @@ final class DeleteProjectController extends AbstractApiController
         $this->manager = $doctrine->getManager();
     }
 
-    public function __invoke(int $id): JsonResponse
+    public function __invoke(Project $project = null): JsonResponse
     {
-        $project = $this->manager->getRepository(Project::class)->find($id);
-
-        if (!$project) {
+        if (!$project)
             return $this->error('Project not found', Response::HTTP_NOT_FOUND);
-        }
 
         $this->manager->remove($project);
         $this->manager->flush();

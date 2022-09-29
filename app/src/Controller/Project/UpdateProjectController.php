@@ -22,13 +22,10 @@ final class UpdateProjectController extends AbstractApiController
         $this->manager = $doctrine->getManager();
     }
 
-    public function __invoke(int $id, Request $request): JsonResponse
+    public function __invoke(Request $request, Project $project = null): JsonResponse
     {
-        $project = $this->manager->getRepository(Project::class)->find($id);
-
-        if (!$project) {
+        if (!$project)
             return $this->error('Project not found', Response::HTTP_NOT_FOUND);
-        }
 
         $form = $this->formFromRequest(ProjectType::class, $request, $project);
 
