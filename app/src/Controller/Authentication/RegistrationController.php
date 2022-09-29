@@ -23,7 +23,7 @@ final class RegistrationController extends AbstractApiController
 
     public function __invoke(Request $request): JsonResponse
     {
-        $form = $this->buildForm(UserType::class, $request);
+        $form = $this->formFromRequest(UserType::class, $request);
 
         if (!$form->isValid())
             return $this->error($this->formatFormError($form), Response::HTTP_UNPROCESSABLE_ENTITY);

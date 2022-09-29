@@ -10,11 +10,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 abstract class AbstractApiController extends AbstractController
 {
-    protected function buildForm(string $type, Request $request): FormInterface
+    protected function formFromRequest(string $type, Request $request, $entity = null): FormInterface
     {
-        $form = $this->container->get('form.factory')->createBuilder($type)->getForm();
+        // Global form factory from service container
+        $form = $this->container->get('form.factory')->createBuilder($type, $entity)->getForm();
 
-        $form->submit($request->toArray());
+        $form->submit($request->toArray(), $entity === null);
 
         return $form;
     }
@@ -25,7 +26,7 @@ abstract class AbstractApiController extends AbstractController
 
         foreach ($form as $name => $error) {
             foreach ($error->getErrors() as $e) {
-                $errors[$name]['message'] = $e->getMessage();
+                $errors[$name]['messages'] = $e->getMessage();
             }
         }
 

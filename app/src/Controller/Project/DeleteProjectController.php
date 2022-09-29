@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/projects/{id}', name: 'project_delete', requirements: ['id' => '\d+'], methods: ['DELETE'])]
-class DeleteProjectController extends AbstractApiController
+final class DeleteProjectController extends AbstractApiController
 {
     protected ObjectManager $manager;
 
