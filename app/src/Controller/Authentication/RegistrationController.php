@@ -8,6 +8,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/auth', name: 'auth_')]
@@ -26,7 +27,7 @@ final class RegistrationController extends AbstractApiController
         $form = $this->buildForm(UserType::class, $request);
 
         if (!$form->isValid())
-            return $this->json($form);
+            return $this->error($this->formatFormError($form), Response::HTTP_UNPROCESSABLE_ENTITY);
 
         $user = $form->getData();
         $user->setCreatedAt();
@@ -34,6 +35,6 @@ final class RegistrationController extends AbstractApiController
         $this->manager->persist($user);
         $this->manager->flush();
 
-        return $this->json($user);
+        return $this->ok($user, Response::HTTP_CREATED);
     }
 }
