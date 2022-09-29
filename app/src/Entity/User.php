@@ -16,7 +16,7 @@ class User
     private ?int $id = null;
 
     #[Assert\NotBlank]
-    #[Assert\Length(min: 1, max: 255)]
+    #[Assert\Length(min: 2, max: 255)]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 

@@ -12,11 +12,7 @@ abstract class AbstractApiController extends AbstractController
 {
     protected function buildForm(string $type, Request $request): FormInterface
     {
-        $options =[
-            'csrf_protection' => false,
-        ];
-
-        $form = $this->container->get('form.factory')->createNamed('', $type, null, $options);
+        $form = $this->container->get('form.factory')->createBuilder($type)->getForm();
 
         $form->submit($request->toArray());
 
