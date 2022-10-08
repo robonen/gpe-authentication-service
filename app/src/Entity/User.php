@@ -25,7 +25,7 @@ class User
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
 
-    #[Assert\Length(min: 4, max: 25)]
+    #[Assert\Length(min: 4, max: 12)]
     #[ORM\Column(length: 25, nullable: true)]
     private ?string $phone = null;
 
