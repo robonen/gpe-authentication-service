@@ -52,4 +52,5 @@ _**Чтобы начать работу:**_
     composer require symfony/form
     composer require symfony/serializer-pack
     composer require symfony/security-bundle
+    composer require --dev vimeo/psalm
 ```

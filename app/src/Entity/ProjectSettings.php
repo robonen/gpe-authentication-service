@@ -2,9 +2,11 @@
 
 namespace App\Entity;
 
+use App\Casts\ProjectSettingsMapper;
 use App\Repository\ProjectSettingsRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Ignore;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProjectSettingsRepository::class)]
@@ -16,6 +18,7 @@ class ProjectSettings
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Ignore]
     #[ORM\ManyToOne(inversedBy: 'projectSettings')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Project $project = null;
@@ -29,11 +32,6 @@ class ProjectSettings
     #[Assert\Length(min: 1, max: 255)]
     #[ORM\Column(length: 255)]
     private ?string $alias = null;
-
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 1, max: 255)]
-    #[ORM\Column(length: 255)]
-    private ?string $type = null;
 
     #[Assert\NotBlank]
     #[Assert\Length(min: 1, max: 255)]
@@ -81,26 +79,16 @@ class ProjectSettings
         return $this;
     }
 
-    public function getType(): ?string
+    public function getValue(mixed $default = null): mixed
     {
-        return $this->type;
+        $mapper = new ProjectSettingsMapper();
+        return $mapper->get($this->alias, $this->value) ?? $default;
     }
 
-    public function setType(string $type): self
+    public function setValue(mixed $value): self
     {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    public function getValue(): ?string
-    {
-        return $this->value;
-    }
-
-    public function setValue(string $value): self
-    {
-        $this->value = $value;
+        $mapper = new ProjectSettingsMapper();
+        $this->value = $mapper->set($this->alias, $value);
 
         return $this;
     }

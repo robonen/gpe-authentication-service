@@ -2,6 +2,8 @@
 
 namespace App\Repository;
 
+use App\Casts\ProjectSettingsMapper;
+use App\Entity\Project;
 use App\Entity\ProjectSettings;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -16,9 +18,12 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ProjectSettingsRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private ProjectSettingsMapper $mapper;
+
+    public function __construct(ManagerRegistry $registry, ProjectSettingsMapper $mapper)
     {
         parent::__construct($registry, ProjectSettings::class);
+        $this->mapper = $mapper;
     }
 
     public function save(ProjectSettings $entity, bool $flush = false): void
