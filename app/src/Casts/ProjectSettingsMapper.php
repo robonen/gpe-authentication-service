@@ -2,7 +2,10 @@
 
 namespace App\Casts;
 
-use App\Casts\Types\AsString;
+use App\Casts\Types\AsEnum;
+use App\Enums\AuthTypesEnum;
+
+;
 
 final class ProjectSettingsMapper extends BaseMapper
 {
@@ -12,7 +15,7 @@ final class ProjectSettingsMapper extends BaseMapper
     public function types(): array
     {
         return [
-            'AUTH_TYPE' => AsString::class,
+            'AUTH_TYPE' => new AsEnum(AuthTypesEnum::class),
         ];
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Casts\ProjectSettingsMapper;
-use App\Entity\Project;
 use App\Entity\ProjectSettings;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -16,7 +15,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method ProjectSettings[]    findAll()
  * @method ProjectSettings[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ProjectSettingsRepository extends ServiceEntityRepository
+final class ProjectSettingsRepository extends ServiceEntityRepository
 {
     private ProjectSettingsMapper $mapper;
 

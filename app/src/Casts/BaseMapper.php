@@ -2,18 +2,20 @@
 
 namespace App\Casts;
 
+use App\Casts\Contracts\Castable;
+
 abstract class BaseMapper
 {
     /**
-     * @return array<string, class-string<\App\Casts\Contracts\Castable>>
+     * @return array<string, \App\Casts\Contracts\Castable>
      */
     abstract public function types(): array;
 
     /**
      * @param string $alias
-     * @return class-string<\App\Casts\Contracts\Castable>|null
+     * @return \App\Casts\Contracts\Castable|null
      */
-    private function findType(string $alias): string|null
+    private function findType(string $alias): Castable|null
     {
         return $this->types()[$alias] ?? null;
     }
@@ -25,15 +27,13 @@ abstract class BaseMapper
      */
     public function get(string $alias, mixed $value): mixed
     {
-        /** @var class-string<\App\Casts\Contracts\Castable> $type */
+        /** @var \App\Casts\Contracts\Castable $type */
         $type = $this->findType($alias);
 
         if ($type === null)
             throw new \InvalidArgumentException("Type {$alias} not found");
 
-        $caster = new $type();
-
-        return $caster->unpack($value);
+        return $type->unpack($value);
     }
 
     /**
@@ -43,14 +43,12 @@ abstract class BaseMapper
      */
     public function set(string $alias, mixed $value): mixed
     {
-        /** @var class-string<\App\Casts\Contracts\Castable> $type */
+        /** @var \App\Casts\Contracts\Castable $type */
         $type = $this->findType($alias);
 
         if ($type === null)
             throw new \InvalidArgumentException("Type {$alias} not found");
 
-        $caster = new $type();
-
-        return $caster->pack($value);
+        return $type->pack($value);
     }
 }
