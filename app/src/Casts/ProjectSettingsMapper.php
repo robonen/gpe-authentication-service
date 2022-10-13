@@ -5,8 +5,6 @@ namespace App\Casts;
 use App\Casts\Types\AsEnum;
 use App\Enums\AuthTypesEnum;
 
-;
-
 final class ProjectSettingsMapper extends BaseMapper
 {
     /**

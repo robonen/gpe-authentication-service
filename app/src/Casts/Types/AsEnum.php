@@ -10,6 +10,9 @@ class AsEnum implements Castable
 
     public function __construct($enumClass)
     {
+        if (!$enumClass instanceof \BackedEnum)
+            throw new \InvalidArgumentException("Value must be instance of enum with scalar backing type");
+
         $this->enumClass = $enumClass;
     }
 
@@ -20,9 +23,6 @@ class AsEnum implements Castable
 
     public function pack(mixed $value)
     {
-        if (!$value instanceof \BackedEnum)
-            throw new \InvalidArgumentException("Value must be instance of enum with scalar backing type");
-
         if (!$value instanceof $this->enumClass)
             throw new \InvalidArgumentException("Value must be an instance of {$this->enumClass}");
 
@@ -31,6 +31,6 @@ class AsEnum implements Castable
 
     public function unpack(mixed $value)
     {
-        return $this->enumClass::from($value);
+        return $this->enumClass::tryFrom($value);
     }
 }
