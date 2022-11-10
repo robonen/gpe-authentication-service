@@ -7,10 +7,16 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface
 {
+
+    public function __construct()
+    {
+        $this->enabled = false;
+    }
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -20,11 +26,13 @@ class User implements UserInterface
     #[Assert\NotBlank]
     #[Assert\Length(min: 2, max: 255)]
     #[ORM\Column(length: 255)]
+    #[Groups(['main'])]
     private ?string $name = null;
 
     #[Assert\Length(min: 1, max: 255)]
     #[Assert\Email]
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['main'])]
     private ?string $email = null;
 
     #[Assert\Length(min: 4, max: 12)]
@@ -33,7 +41,22 @@ class User implements UserInterface
 
     #[Assert\Length(min: 6, max: 255)]
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['main'])]
     private ?string $password = null;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $confirmationCode;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean")
+     */
+    private $enabled;
 
     // TODO: Roles validator
     #[ORM\Column(type: Types::ARRAY, nullable: true)]
@@ -43,6 +66,7 @@ class User implements UserInterface
     private ?\DateTimeImmutable $email_verified_at = null;
 
     #[ORM\Column]
+    #[Groups(['main'])]
     private ?\DateTimeImmutable $created_at = null;
 
     public function getId(): ?int
@@ -94,6 +118,46 @@ class User implements UserInterface
     public function setPassword(string $password): self
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getConfirmationCode(): string
+    {
+        return $this->confirmationCode;
+    }
+
+    /**
+     * @param string $confirmationCode
+     *
+     * @return User
+     */
+    public function setConfirmationCode(string $confirmationCode): self
+    {
+        $this->confirmationCode = $confirmationCode;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getEnabled(): bool
+    {
+        return $this->enabled;
+    }
+
+    /**
+     * @param bool $enabled
+     *
+     * @return User
+     */
+    public function setEnable(bool $enabled): self
+    {
+        $this->enabled = $enabled;
 
         return $this;
     }

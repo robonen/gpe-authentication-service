@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
-//use App\Entity\AccessToken;
+use App\Entity\AccessToken;
 use App\Service\NormalizeService;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,24 +43,25 @@ class SecurityController extends AbstractController
 
         $user = new User();
         $user->setEmail($email);
+ //       $user->setConfirmationCode($codeGenerator->getConfirmationCode());
         $user->setName($email);
-        $user->setCreatedAt(new \DateTime());
+        $user->setCreatedAt();
         $user->setRoles(['ROLE_USER']);
         $user->setPassword(password_hash($password, PASSWORD_DEFAULT));
 
-/*      $token = new AccessToken();
+        $token = new AccessToken();
         $token->setUser($user);
         $token->setActiveTill((new \DateTimeImmutable())->add(new \DateInterval('P1Y')));
         $token->setToken(bin2hex(openssl_random_pseudo_bytes(64)));
-*/
+
         $em->persist($user);
- //       $em->persist($token);
+        $em->persist($token);
         $em->flush();
 
         return $this->json([
             'message' => 'Регистрация прошла успешно',
             'data' => array(
-//                'token' => $token->getToken(),
+                'token' => $token->getToken(),
                 'user' => (new NormalizeService())->normalizeByGroup($user)
             ),
         ]);
@@ -87,18 +88,18 @@ class SecurityController extends AbstractController
                 'message' =>'Неверный логин и/или пароль'), JsonResponse::HTTP_BAD_REQUEST);
         }
 
-/*        $token = new AccessToken();
+        $token = new AccessToken();
         $token->setUser($user);
         $token->setActiveTill((new \DateTimeImmutable())->add(new \DateInterval('P1Y')));
         $token->setToken(bin2hex(openssl_random_pseudo_bytes(64)));
 
         $em->persist($token);
- */       $em->flush();
+        $em->flush();
 
         return $this->json([
             'message' => 'Вход в систему выполнен успешно',
             'data' => array(
- //               'token' => $token->getToken(),
+                'token' => $token->getToken(),
                 'user' => (new NormalizeService())->normalizeByGroup($user)
             ),
         ]);
@@ -131,9 +132,9 @@ class SecurityController extends AbstractController
         $user->setPassword(password_hash($password, PASSWORD_DEFAULT));
 
         $type = $data['type'] ?? 'reset';
-//        $tokens = $em->getRepository('App:AccessToken')->findByUser($user);
+        $tokens = $em->getRepository('App:AccessToken')->findByUser($user);
 
- /*       if($type == 'update') {
+        if($type == 'update') {
             $token = $em->getRepository('App:AccessToken')->findOneByToken(explode(' ', $request->headers->get('YT-AUTH-TOKEN'))[1]);
             if($token instanceof AccessToken) {
                 if(($key = array_search($token, $tokens, TRUE)) !== FALSE) {
@@ -144,15 +145,15 @@ class SecurityController extends AbstractController
         foreach($tokens as $token) {
             $em->remove($token);
         }
-*/
+
         $em->flush();
 
         $message = (new Email())
-            ->from('forinfo@yourtar.ru')
+            ->from('forinfo@yourtar.ru') //mail
             ->to($user->getEmail())
             ->subject('Новый пароль')
             ->html($this->renderView(
-                'email/newPassword.html.twig',
+                'email/newPassword.html.twig', //front
                 array(
                     'password' => $password
                 )
@@ -228,7 +229,7 @@ class SecurityController extends AbstractController
     public function logout(Request $request, ManagerRegistry $doctrine)
     {
         $em = $doctrine->getManager();
-/*        $token = $em->getRepository('App:AccessToken')->findOneBy(array(
+        $token = $em->getRepository('App:AccessToken')->findOneBy(array(
             'token' => explode(' ', $request->headers->get('YT-AUTH-TOKEN'))[1],
         ));
 
@@ -239,7 +240,7 @@ class SecurityController extends AbstractController
         }
 
         $em->remove($token);
-*/        $em->flush();
+        $em->flush();
 
         return $this->json([
             'message' => 'Выход из системы выполнен успешно.',
