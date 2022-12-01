@@ -6,18 +6,13 @@ use App\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User implements UserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-
-    public function __construct()
-    {
-        $this->enabled = false;
-    }
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -43,20 +38,6 @@ class User implements UserInterface
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['main'])]
     private ?string $password = null;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string", nullable=true)
-     */
-    private $confirmationCode;
-
-    /**
-     * @var bool
-     *
-     * @ORM\Column(type="boolean")
-     */
-    private $enabled;
 
     // TODO: Roles validator
     #[ORM\Column(type: Types::ARRAY, nullable: true)]
@@ -122,46 +103,6 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getConfirmationCode(): string
-    {
-        return $this->confirmationCode;
-    }
-
-    /**
-     * @param string $confirmationCode
-     *
-     * @return User
-     */
-    public function setConfirmationCode(string $confirmationCode): self
-    {
-        $this->confirmationCode = $confirmationCode;
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getEnabled(): bool
-    {
-        return $this->enabled;
-    }
-
-    /**
-     * @param bool $enabled
-     *
-     * @return User
-     */
-    public function setEnable(bool $enabled): self
-    {
-        $this->enabled = $enabled;
-
-        return $this;
-    }
-
     public function getRoles(): array
     {
         $roles = $this->roles;
@@ -176,16 +117,6 @@ class User implements UserInterface
         $this->roles = $roles;
 
         return $this;
-    }
-
-    public function getSalt()
-    {
-
-    }
-
-    public function eraseCredentials()
-    {
-        // TODO: Implement eraseCredentials() method.
     }
 
     public function getEmailVerifiedAt(): ?\DateTimeImmutable
@@ -218,6 +149,26 @@ class User implements UserInterface
 
     public function getUserIdentifier(): string
     {
-        // TODO: Implement getUserIdentifier() method
+        return (string) $this->id;
+    }
+
+    /**
+     * Returning a salt is only needed if you are not using a modern
+     * hashing algorithm (e.g. bcrypt or sodium) in your security.yaml.
+     *
+     * @see UserInterface
+     */
+    public function getSalt(): ?string
+    {
+        return null;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials()
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 }
