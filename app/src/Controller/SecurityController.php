@@ -132,10 +132,10 @@ class SecurityController extends AbstractController
         $user->setPassword(password_hash($password, PASSWORD_DEFAULT));
 
         $type = $data['type'] ?? 'reset';
-        $tokens = $em->getRepository('App:AccessToken')->findByUser($user);
+        $tokens = $em->getRepository(AccessToken::class)->findByUser($user);
 
         if($type == 'update') {
-            $token = $em->getRepository('App:AccessToken')->findOneByToken(explode(' ', $request->headers->get('YT-AUTH-TOKEN'))[1]);
+            $token = $em->getRepository(AccessToken::class)->findOneByToken(explode(' ', $request->headers->get('YT-AUTH-TOKEN'))[1]);
             if($token instanceof AccessToken) {
                 if(($key = array_search($token, $tokens, TRUE)) !== FALSE) {
                     unset($tokens[$key]);
