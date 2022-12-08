@@ -3,6 +3,7 @@
 namespace App\Controller\Authentication;
 
 use App\Controller\AbstractApiController;
+use App\Entity\AccessToken;
 use App\Entity\User;
 use App\Form\Type\UserType;
 use App\Repository\UserRepository;
@@ -13,7 +14,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/auth/registration', name: 'auth_registration', methods: ['POST'])]
-final class RegistrationController extends AbstractApiController
+final class RegisterController extends AbstractApiController
 {
     public function __invoke(
         Request $request,
@@ -35,6 +36,11 @@ final class RegistrationController extends AbstractApiController
         );
         $user->setPassword($hashedPassword);
         $user->setCreatedAt();
+
+        $token = new AccessToken();
+        $token->setUser($user);
+        $token->setActiveTill((new \DateTimeImmutable())->add(new \DateInterval('P1Y')));
+        $token->setToken(bin2hex(openssl_random_pseudo_bytes(64)));
 
         $repository->save($user);
 

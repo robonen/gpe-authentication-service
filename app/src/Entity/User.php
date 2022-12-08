@@ -18,9 +18,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Assert\NotBlank]
+    
     #[Assert\Length(min: 2, max: 255)]
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['main'])]
     private ?string $name = null;
 
@@ -34,6 +34,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 25, nullable: true)]
     private ?string $phone = null;
 
+    
     #[Assert\Length(min: 6, max: 255)]
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['main'])]
