@@ -3,8 +3,10 @@
 namespace App\Controller\Authentication;
 
 use App\Controller\AbstractApiController;
+use App\Entity\AccessToken;
 use App\Entity\User;
 use App\Form\Type\UserType;
+use App\Repository\AccessTokenRepository;
 use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,6 +20,7 @@ final class LoginController extends AbstractApiController
     public function __invoke(
         Request $request,
         UserRepository $repository,
+        AccessTokenRepository $tokenRepository,
         UserPasswordHasherInterface $passwordHasher
     ): JsonResponse
     {
@@ -38,6 +41,16 @@ final class LoginController extends AbstractApiController
         if (!$passwordHasher->isPasswordValid($registeredUser, $user->getPassword()))
             return $this->error('Invalid password', Response::HTTP_UNAUTHORIZED);
 
-        return $this->ok($registeredUser, Response::HTTP_CREATED);
+        $token = new AccessToken();
+        $token->setUser($registeredUser);
+        $token->setActiveTill((new \DateTimeImmutable())->add(new \DateInterval('P1Y')));
+        $token->setToken(bin2hex(openssl_random_pseudo_bytes(64)));
+
+        $tokenRepository->save($token);
+
+        return $this->ok([
+            'user' => $registeredUser,
+            'token' => $token->getToken()],
+            Response::HTTP_CREATED);
     }
 }

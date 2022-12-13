@@ -6,6 +6,7 @@ use App\Controller\AbstractApiController;
 use App\Entity\AccessToken;
 use App\Entity\User;
 use App\Form\Type\UserType;
+use App\Repository\AccessTokenRepository;
 use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,8 +18,9 @@ use Symfony\Component\Routing\Annotation\Route;
 final class RegisterController extends AbstractApiController
 {
     public function __invoke(
-        Request $request,
-        UserRepository $repository,
+        Request                     $request,
+        UserRepository              $repository,
+        AccessTokenRepository       $tokenRepository,
         UserPasswordHasherInterface $passwordHasher
     ): JsonResponse
     {
@@ -42,8 +44,12 @@ final class RegisterController extends AbstractApiController
         $token->setActiveTill((new \DateTimeImmutable())->add(new \DateInterval('P1Y')));
         $token->setToken(bin2hex(openssl_random_pseudo_bytes(64)));
 
-        $repository->save($user);
+        $repository->save($user, false);
+        $tokenRepository->save($token);
 
-        return $this->ok($user, Response::HTTP_CREATED);
+        return $this->ok([
+                'user' => $user,
+                'token' => $token->getToken()],
+            Response::HTTP_CREATED);
     }
 }

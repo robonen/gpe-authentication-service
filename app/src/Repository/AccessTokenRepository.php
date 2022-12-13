@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\AccessToken;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -19,6 +20,23 @@ class AccessTokenRepository extends ServiceEntityRepository
         parent::__construct($registry, AccessToken::class);
     }
 
+    public function save(AccessToken $entity, bool $flush = true): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function remove(AccessToken $entity, bool $flush = true): void
+    {
+        $this->getEntityManager()->remove($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
     // /**
     //  * @return AccessToken[] Returns an array of AccessToken objects
     //  */
